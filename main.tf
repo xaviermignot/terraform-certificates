@@ -1,0 +1,19 @@
+resource "random_pet" "suffix" {}
+
+module "app_service" {
+  source = "./00_app_service"
+
+  suffix   = random_pet.suffix.id
+  location = var.location
+
+  dns = {
+    zone_name    = var.dns_zone_name
+    zone_rg_name = var.dns_zone_rg_name
+  }
+}
+
+module "self_signed" {
+  source = "./01_self_signed"
+
+  common_name = module.app_service.custom_hostname
+}
