@@ -18,17 +18,12 @@ module "self_signed" {
   common_name = module.app_service.custom_hostname
 }
 
-resource "azurerm_app_service_certificate" "self_signed" {
-  name                = "self-signed"
-  resource_group_name = module.app_service.resource_group_name
-  location            = var.location
+module "app_service_cert" {
+  source = "./00_app_service_cert"
 
-  pfx_blob = module.self_signed.pfx_value
-  password = module.self_signed.pfx_password
-}
-
-resource "azurerm_app_service_certificate_binding" "self_signed" {
-  hostname_binding_id = module.app_service.custom_domain_binding_id
-  certificate_id      = azurerm_app_service_certificate.self_signed.id
-  ssl_state           = "SniEnabled"
+  resource_group_name      = module.app_service.resource_group_name
+  location                 = var.location
+  pfx_value                = module.self_signed.pfx_value
+  pfx_password             = module.self_signed.pfx_password
+  custom_domain_binding_id = module.app_service.custom_domain_binding_id
 }
