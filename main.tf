@@ -1,5 +1,7 @@
+# Generates a "pet name" in 2 words that is used in resource names to make them unique
 resource "random_pet" "suffix" {}
 
+# This module creates a resource group, an App Service, and binds it to a custom domain (without securing the binding)
 module "app_service" {
   source = "./00_app_service"
 
@@ -12,6 +14,7 @@ module "app_service" {
   }
 }
 
+# This module generates a self-signed certificate and creates an App Service certificate from it
 module "self_signed" {
   source = "./01_self_signed"
 
@@ -20,6 +23,7 @@ module "self_signed" {
   common_name         = module.app_service.custom_hostname
 }
 
+# This module gets a certificate from Let's Encrypt and creates an App Service certificate from it
 module "acme" {
   source = "./02_acme"
 
@@ -34,14 +38,17 @@ module "acme" {
   }
 }
 
+# This module creates an App Service managed certificate
 module "managed" {
   source = "./03_managed"
 
   custom_domain_binding_id = module.app_service.custom_domain_binding_id
 }
 
+# The binding between the App Service custom domain and the certificate is done here.
+# You can choose which certificate is used and see the result after applying the changes
 resource "azurerm_app_service_certificate_binding" "cert_binding" {
-  hostname_binding_id = module.app_service.custom_domain_binding_id
   certificate_id      = module.self_signed.certificate_id
+  hostname_binding_id = module.app_service.custom_domain_binding_id
   ssl_state           = "SniEnabled"
 }

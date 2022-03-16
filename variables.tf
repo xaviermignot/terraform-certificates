@@ -1,6 +1,7 @@
 variable "location" {
   type        = string
   description = "The location to create the resources in"
+  default     = "francecentral"
 }
 
 variable "dns_zone_name" {
