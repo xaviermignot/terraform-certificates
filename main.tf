@@ -33,10 +33,10 @@ module "acme" {
 module "app_service_cert" {
   source = "./00_app_service_cert"
 
-  resource_group_name      = module.app_service.resource_group_name
-  location                 = var.location
-  pfx_value                = module.acme.pfx_value
-  pfx_password             = module.acme.pfx_password
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  pfx_value           = module.acme.pfx_value
+  pfx_password        = module.acme.pfx_password
   # pfx_value                = module.self_signed.pfx_value
   # pfx_password             = module.self_signed.pfx_password
   custom_domain_binding_id = module.app_service.custom_domain_binding_id

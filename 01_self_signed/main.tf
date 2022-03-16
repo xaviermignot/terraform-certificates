@@ -9,7 +9,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
   validity_period_hours = 48
 
   subject {
-    common_name  = var.common_name
+    common_name = var.common_name
   }
 
   allowed_uses = ["key_encipherment", "digital_signature", "server_auth"]
