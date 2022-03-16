@@ -12,7 +12,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     common_name  = var.common_name
   }
 
-  allowed_uses = ["key_encipherment", "digital_signature"]
+  allowed_uses = ["key_encipherment", "digital_signature", "server_auth"]
 }
 
 resource "random_password" "self_signed_cert" {
