@@ -9,3 +9,7 @@ output "custom_hostname" {
 output "custom_domain_binding_id" {
   value = azurerm_app_service_custom_hostname_binding.app.id
 }
+
+output "resource_group_name" {
+  value = azurerm_resource_group.rg.name
+}
