@@ -25,3 +25,12 @@ resource "pkcs12_from_pem" "self_signed_cert" {
   private_key_pem = tls_private_key.private_key.private_key_pem
   password        = random_password.self_signed_cert.result
 }
+
+resource "azurerm_app_service_certificate" "self_signed_cert" {
+  name                = "self-signed"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  pfx_blob = pkcs12_from_pem.self_signed_cert.result
+  password = pkcs12_from_pem.self_signed_cert.password
+}

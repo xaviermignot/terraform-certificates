@@ -27,3 +27,12 @@ resource "acme_certificate" "cert" {
     }
   }
 }
+
+resource "azurerm_app_service_certificate" "cert" {
+  name                = "acme"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  pfx_blob = acme_certificate.cert.certificate_p12
+  password = acme_certificate.cert.certificate_p12_password
+}

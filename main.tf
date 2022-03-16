@@ -15,14 +15,18 @@ module "app_service" {
 module "self_signed" {
   source = "./01_self_signed"
 
-  common_name = module.app_service.custom_hostname
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  common_name         = module.app_service.custom_hostname
 }
 
 module "acme" {
   source = "./02_acme"
 
-  common_name = module.app_service.custom_hostname
-  email       = "contact@${var.dns_zone_name}"
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  common_name         = module.app_service.custom_hostname
+  email               = "contact@${var.dns_zone_name}"
 
   dns = {
     zone_name    = var.dns_zone_name
@@ -30,14 +34,14 @@ module "acme" {
   }
 }
 
-module "app_service_cert" {
-  source = "./00_app_service_cert"
+module "managed" {
+  source = "./03_managed"
 
-  resource_group_name = module.app_service.resource_group_name
-  location            = var.location
-  pfx_value           = module.acme.pfx_value
-  pfx_password        = module.acme.pfx_password
-  # pfx_value                = module.self_signed.pfx_value
-  # pfx_password             = module.self_signed.pfx_password
   custom_domain_binding_id = module.app_service.custom_domain_binding_id
+}
+
+resource "azurerm_app_service_certificate_binding" "cert_binding" {
+  hostname_binding_id = module.app_service.custom_domain_binding_id
+  certificate_id      = module.self_signed.certificate_id
+  ssl_state           = "SniEnabled"
 }

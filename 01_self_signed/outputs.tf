@@ -1,7 +1,3 @@
-output "pfx_value" {
-  value = pkcs12_from_pem.self_signed_cert.result
-}
-
-output "pfx_password" {
-  value = pkcs12_from_pem.self_signed_cert.password
+output "certificate_id" {
+  value = azurerm_app_service_certificate.self_signed_cert.id
 }
