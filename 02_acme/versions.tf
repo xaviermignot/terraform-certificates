@@ -1,9 +1,5 @@
 terraform {
   required_providers {
-    pkcs12 = {
-      source  = "chilicat/pkcs12"
-      version = "~> 0.0"
-    }
     acme = {
       source  = "vancluever/acme"
       version = "~> 2.0"
