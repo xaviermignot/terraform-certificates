@@ -7,43 +7,38 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
-resource "azurerm_app_service_plan" "plan" {
+resource "azurerm_service_plan" "plan" {
   name                = "plan-${local.suffix}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  sku {
-    tier     = "Basic"
-    size     = "B1"
-    capacity = 1
-  }
-
-  kind     = "Linux"
-  reserved = true
+  os_type  = "Linux"
+  sku_name = "B1"
 }
 
-resource "azurerm_app_service" "app" {
+resource "azurerm_linux_web_app" "app" {
   name                = "web-${local.suffix}"
   location            = var.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  app_service_plan_id = azurerm_app_service_plan.plan.id
+  service_plan_id = azurerm_service_plan.plan.id
 
   site_config {
-    linux_fx_version         = "DOTNETCORE|6.0"
-    dotnet_framework_version = "v6.0"
+    application_stack {
+      dotnet_version = "6.0"
+    }
   }
 }
 
 # TXT record for verifying domain ownership
 resource "azurerm_dns_txt_record" "app" {
-  name                = "asuid.${azurerm_app_service.app.name}"
+  name                = "asuid.${azurerm_linux_web_app.app.name}"
   zone_name           = var.dns.zone_name
   resource_group_name = var.dns.zone_rg_name
   ttl                 = 300
 
   record {
-    value = azurerm_app_service.app.custom_domain_verification_id
+    value = azurerm_linux_web_app.app.custom_domain_verification_id
   }
 }
 
@@ -54,13 +49,13 @@ resource "azurerm_dns_cname_record" "app" {
   resource_group_name = var.dns.zone_rg_name
   ttl                 = 300
 
-  record = azurerm_app_service.app.default_site_hostname
+  record = azurerm_linux_web_app.app.default_hostname
 }
 
 # Bind app service to custom domain
 resource "azurerm_app_service_custom_hostname_binding" "app" {
   hostname            = "tf-certs-demo.${var.dns.zone_name}"
-  app_service_name    = azurerm_app_service.app.name
+  app_service_name    = azurerm_linux_web_app.app.name
   resource_group_name = azurerm_resource_group.rg.name
 
   depends_on = [azurerm_dns_txt_record.app]

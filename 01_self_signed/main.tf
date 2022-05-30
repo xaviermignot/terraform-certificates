@@ -5,7 +5,6 @@ resource "tls_private_key" "private_key" {
 
 # Generates a TLS self-signed certificate using the private key
 resource "tls_self_signed_cert" "self_signed_cert" {
-  key_algorithm   = tls_private_key.private_key.algorithm
   private_key_pem = tls_private_key.private_key.private_key_pem
 
   validity_period_hours = 48
