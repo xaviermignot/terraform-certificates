@@ -45,6 +45,16 @@ module "managed" {
   custom_domain_binding_id = module.app_service.custom_domain_binding_id
 }
 
+module "key_vault" {
+  source = "./04_key_vault"
+
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  suffix              = random_pet.suffix.id
+  common_name         = module.app_service.custom_hostname
+  email               = "contact@${var.dns_zone_name}"
+}
+
 # The binding between the App Service custom domain and the certificate is done here.
 # You can choose which certificate is used and see the result after applying the changes
 resource "azurerm_app_service_certificate_binding" "cert_binding" {
