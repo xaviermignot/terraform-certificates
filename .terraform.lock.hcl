@@ -1,7 +1,7 @@
-# This file is maintained automatically by "terraform init".
+# This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
-provider "registry.terraform.io/chilicat/pkcs12" {
+provider "registry.opentofu.org/chilicat/pkcs12" {
   version     = "0.2.5"
   constraints = "~> 0.0"
   hashes = [
