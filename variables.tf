@@ -22,6 +22,6 @@ variable "binding_cert" {
 
   validation {
     condition = contains(["self_signed", "acme", "managed"], var.binding_cert)
-    error_message = "The binding_cert variable must be one of self_signed, acme, or managed."
+    error_message = "The binding_cert variable must be one of self_signed, acme, managed or key_vault."
   }  
 }

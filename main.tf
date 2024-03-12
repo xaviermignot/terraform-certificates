@@ -36,6 +36,11 @@ module "acme" {
     zone_name    = var.dns_zone_name
     zone_rg_name = var.dns_zone_rg_name
   }
+
+  providers = {
+    acme = acme
+    # acme = acme.staging
+  }
 }
 
 # This module creates an App Service managed certificate
@@ -46,6 +51,8 @@ module "managed" {
 }
 
 module "key_vault" {
+  count = var.binding_cert == "key_vault" ? 1 : 0
+
   source = "./04_key_vault"
 
   resource_group_name = module.app_service.resource_group_name

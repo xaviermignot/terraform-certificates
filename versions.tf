@@ -12,9 +12,22 @@ terraform {
       source  = "hashicorp/tls"
       version = "~> 4.0"
     }
+    acme = {
+      source  = "vancluever/acme"
+      version = "~> 2.0"
+    }
   }
 }
 
 provider "azurerm" {
   features {}
+}
+
+provider "acme" {
+  server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  alias      = "staging"
+}
+
+provider "acme" {
+  server_url = "https://acme-v02.api.letsencrypt.org/directory"
 }
