@@ -2,8 +2,6 @@ locals {
   suffix = "tf-certs-demo-${var.suffix}"
 }
 
-data "azurerm_client_config" "current" {}
-
 resource "azurerm_key_vault" "kv" {
   name                = substr("kv-${local.suffix}", 0, 24)
   location            = var.location
@@ -12,13 +10,6 @@ resource "azurerm_key_vault" "kv" {
   sku_name                  = "standard"
   tenant_id                 = data.azurerm_client_config.current.tenant_id
   enable_rbac_authorization = true
-}
-
-resource "azurerm_role_assignment" "kv_roles" {
-  for_each             = toset(["Key Vault Certificates Officer", "Key Vault Crypto Officer"])
-  scope                = azurerm_key_vault.kv.id
-  role_definition_name = each.key
-  principal_id         = data.azurerm_client_config.current.object_id
 }
 
 resource "azurerm_key_vault_certificate" "cert" {
@@ -42,6 +33,8 @@ resource "azurerm_key_vault_certificate" "cert" {
     }
 
     x509_certificate_properties {
+      extended_key_usage = ["1.3.6.1.5.5.7.3.1"]
+
       key_usage = [
         "cRLSign",
         "dataEncipherment",
@@ -59,6 +52,8 @@ resource "azurerm_key_vault_certificate" "cert" {
       }
     }
   }
+
+  depends_on = [azurerm_role_assignment.kv_current_user]
 }
 
 resource "azurerm_app_service_certificate" "cert" {
@@ -67,4 +62,6 @@ resource "azurerm_app_service_certificate" "cert" {
   location            = var.location
 
   key_vault_secret_id = azurerm_key_vault_certificate.cert.secret_id
+
+  depends_on = [azurerm_role_assignment.kv_app_service]
 }
