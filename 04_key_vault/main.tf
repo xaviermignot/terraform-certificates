@@ -28,6 +28,16 @@ resource "azurerm_key_vault_certificate" "cert" {
       reuse_key  = true
     }
 
+    lifetime_action {
+      action {
+        action_type = "AutoRenew"
+      }
+
+      trigger {
+        days_before_expiry = 30
+      }
+    }
+
     secret_properties {
       content_type = "application/x-pkcs12"
     }
