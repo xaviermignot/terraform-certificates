@@ -23,9 +23,27 @@ provider "registry.opentofu.org/chilicat/pkcs12" {
   ]
 }
 
-provider "registry.terraform.io/hashicorp/azurerm" {
-  version     = "4.21.1"
-  constraints = "~> 4.0"
+provider "registry.opentofu.org/hashicorp/azuread" {
+  version     = "2.47.0"
+  constraints = "~> 2.0"
+  hashes = [
+    "h1:7S7BGTFnA9PFLC0cd83s8ffDYYr/93kWfWxDxNBE0/w=",
+    "zh:008c292478ca24307eeb379d32be8084b4377f7d08661aeead0ed1abd331a10a",
+    "zh:2804ba71c4ced3b5401556a3a8812b71a214893e8cf61f20c6ba569e9fcab057",
+    "zh:4de548da3a0c12268048b03c2edfa88406f365994ef353cb3dc80656ab200689",
+    "zh:56403cbb9186cf5f1c044c9b3df1081db80f35b09caffa8a80fb0af95ec9d14e",
+    "zh:8731d3187b5693a8db11e0a1df4ddd6e41d96e03c169f87e16fe66bc60f7ed49",
+    "zh:9c7c821119f9f345753410c8faf76885cfcf2ddaf60d8c12dd715ff4ed93a03d",
+    "zh:b3f2c7d4bca6b3ab14fe49c755eba162585d68b4aef1ea69f271101839bef2db",
+    "zh:b704ae815d0d1d02ce7ed8c98dcf27fed9afae7f15af816e9f89c231693e11e2",
+    "zh:e20dc8cdf74db40667bd683ce1487a7fee0b3a1d5177a480ea075be9e14f0e7e",
+    "zh:e92f59e64bb72a4be05e302bd9688955256588a453f5f248ddacd5096ee4ae26",
+  ]
+}
+
+provider "registry.opentofu.org/hashicorp/azurerm" {
+  version     = "3.95.0"
+  constraints = "~> 3.0"
   hashes = [
     "h1:aU9KutEpmLrMWZvgbqKhx9vYmlr1HqEc3TSrn/VPOnE=",
     "zh:0ba8a63b1b2572a8b04c122fd76fdca9a529b4ca3364cc1c8883341300285bf8",
