@@ -52,11 +52,17 @@ resource "azurerm_dns_cname_record" "app" {
   record = azurerm_linux_web_app.app.default_hostname
 }
 
+resource "time_sleep" "before_binding" {
+  create_duration = "30s"
+
+  depends_on = [azurerm_dns_txt_record.app]
+}
+
 # Bind app service to custom domain
 resource "azurerm_app_service_custom_hostname_binding" "app" {
   hostname            = "tf-certs-demo.${var.dns.zone_name}"
   app_service_name    = azurerm_linux_web_app.app.name
   resource_group_name = azurerm_resource_group.rg.name
 
-  depends_on = [azurerm_dns_txt_record.app]
+  depends_on = [time_sleep.before_binding]
 }
