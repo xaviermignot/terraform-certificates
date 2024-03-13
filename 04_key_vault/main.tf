@@ -14,9 +14,10 @@ resource "azurerm_key_vault" "kv" {
   enable_rbac_authorization = true
 }
 
-resource "azurerm_role_assignment" "cert_admin" {
+resource "azurerm_role_assignment" "kv_roles" {
+  for_each             = toset(["Key Vault Certificates Officer", "Key Vault Crypto Officer"])
   scope                = azurerm_key_vault.kv.id
-  role_definition_name = "Key Vault Certificates Officer"
+  role_definition_name = each.key
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
@@ -26,7 +27,7 @@ resource "azurerm_key_vault_certificate" "cert" {
 
   certificate_policy {
     issuer_parameters {
-      name = "Unknown"
+      name = "Self"
     }
 
     key_properties {
@@ -58,4 +59,12 @@ resource "azurerm_key_vault_certificate" "cert" {
       }
     }
   }
+}
+
+resource "azurerm_app_service_certificate" "cert" {
+  name                = "cert-key-vault"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  key_vault_secret_id = azurerm_key_vault_certificate.cert.secret_id
 }
