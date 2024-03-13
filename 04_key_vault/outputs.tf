@@ -1,3 +1,3 @@
 output "certificate_id" {
-  value = ""
+  value = azurerm_app_service_certificate.cert.id
 }
