@@ -51,9 +51,17 @@ module "managed" {
 }
 
 module "key_vault" {
-  count = var.binding_cert == "key_vault" ? 1 : 0
-
   source = "./04_key_vault"
+
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  suffix              = random_pet.suffix.id
+  common_name         = module.app_service.custom_hostname
+  email               = "contact@${var.dns_zone_name}"
+}
+
+module "key_vault_acme" {
+  source = "./05_key_vault_acme"
 
   resource_group_name = module.app_service.resource_group_name
   location            = var.location
@@ -67,6 +75,8 @@ locals {
     self_signed = module.self_signed.certificate_id
     acme        = module.acme.certificate_id
     managed     = module.managed.certificate_id
+    key_vault   = module.key_vault.certificate_id
+    key_vault_acme = module.key_vault_acme.certificate_id
   }
 }
 
