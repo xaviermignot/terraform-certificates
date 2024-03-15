@@ -20,7 +20,7 @@ variable "module_to_use" {
   description = "The name of the module to use"
   default     = "managed"
   validation {
-    condition     = contains(["self_signed", "acme", "managed", "key_vault"], var.module_to_use)
-    error_message = "Variable module_to_use must be either 'self_signed', 'acme', 'managed' or 'key_vault'."
+    condition     = contains(["self_signed", "acme", "managed", "key_vault", "key_vault_acme"], var.module_to_use)
+    error_message = "Variable module_to_use must be either 'self_signed', 'acme', 'managed', 'key_vault' or 'key_vault_acme'."
   }
 }

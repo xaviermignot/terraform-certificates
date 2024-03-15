@@ -68,12 +68,25 @@ module "key_vault" {
   email               = "contact@${var.dns_zone_name}"
 }
 
+module "key_vault_acme" {
+  count = var.module_to_use == "key_vault_acme" ? 1 : 0
+
+  source = "./05_key_vault_acme"
+
+  resource_group_name = module.app_service.resource_group_name
+  location            = var.location
+  suffix              = random_pet.suffix.id
+  common_name         = module.app_service.custom_hostname
+  email               = "contact@${var.dns_zone_name}"
+}
+
 locals {
   certificate_id = {
-    self_signed = var.module_to_use == "self_signed" ? module.self_signed[0].certificate_id : ""
-    acme        = var.module_to_use == "acme" ? module.acme[0].certificate_id : ""
-    managed     = var.module_to_use == "acme" ? module.acme[0].certificate_id : ""
-    key_vault   = var.module_to_use == "key_vault" ? module.key_vault[0].certificate_id : ""
+    self_signed    = var.module_to_use == "self_signed" ? module.self_signed[0].certificate_id : ""
+    acme           = var.module_to_use == "acme" ? module.acme[0].certificate_id : ""
+    managed        = var.module_to_use == "acme" ? module.acme[0].certificate_id : ""
+    key_vault      = var.module_to_use == "key_vault" ? module.key_vault[0].certificate_id : ""
+    key_vault_acme = var.module_to_use == "key_vault_acme" ? module.key_vault_acme[0].certificate_id : ""
   }[var.module_to_use]
 }
 
