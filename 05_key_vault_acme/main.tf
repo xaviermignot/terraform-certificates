@@ -46,18 +46,22 @@ resource "azurerm_key_vault_certificate" "cert" {
 
       subject            = "CN=${var.common_name}"
       validity_in_months = 3
-
-      subject_alternative_names {
-        emails = [var.email]
-      }
     }
   }
 
   depends_on = [azurerm_role_assignment.kv_current_user]
-}
 
-resource "azapi_resource" "csr" {
-  type = ""
+  provisioner "local-exec" {
+    command = <<EOT
+csr=$(az keyvault certificate pending show -n ${self.name} --vault-name "$KV_NAME" --query csr -o tsv)
+echo '-----BEGIN CERTIFICATE REQUEST-----' && echo "$csr" && echo '-----END CERTIFICATE REQUEST-----' > ./cert.csr
+acme.sh --signcsr --csr ./cert.csr --dns dns_azure
+    EOT
+
+    environment = {
+      KV_NAME = azurerm_key_vault.kv.name
+    }
+  }
 }
 
 resource "azurerm_app_service_certificate" "cert" {
