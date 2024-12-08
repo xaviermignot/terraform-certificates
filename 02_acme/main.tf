@@ -23,7 +23,7 @@ resource "acme_certificate" "cert" {
 
   dns_challenge {
     # Many providers are supported for the DNS challenge, we are using Azure DNS here
-    provider = "azure"
+    provider = "azuredns"
 
     config = {
       # Some arguments are passed here but it's not enough to let the provider access the zone in Azure DNS.
