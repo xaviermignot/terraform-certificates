@@ -13,25 +13,24 @@ Obviously the third example can only work with Azure. The two others are written
 
 ## Getting started
 
-### Set the variables of the root module
+### Set some variables
 
-If you want to run this against your Azure infrastructure you will need to provide values for the variables of the root module:
+If you want to run this against your Azure infrastructure you will need to provide values for these variables:
 - The `dns_zone_name` should contain the name of your DNS Zone managed in Azure
 - The `dns_zone_rg_name` should contain the name of the resource group containing your DNS zone (defaults to `rg-dns` as it's what I use in my subscription)
 - The `location` should contain the Azure region you want to use (defaults to `francecentral` as it's the closest in my case :croissant:)
 
-### Add environment variables for Let's Encrypt
+Also the Terraform AzureRm provider requires the subscription id to be set as an argument. I prefer to use the `ARM_SUBSCRIPTION_ID` environment variable rather than putting a subscription id in the repo.  
 
-The Terraform ACME provider can be used with many DNS providers. I use Azure DNS in this repo, so the authentication requires adding a few environment variables as the provider does not get a token from the `az cli` signed in user.  
-I have personally used a `.env` file which is git-ignored with a content like this:
+So for all these variables I personally use a `.env` file which is git-ignored with a content like this:
 ```sh
-export ARM_TENANT_ID="<YOUR AZURE TENAND ID (a guid)>"
-export ARM_SUBSCRIPTION_ID="<YOUR AZURE SUBSCRIPTION ID (another guid)>"
-export ARM_CLIENT_ID="<AN APP REGISTRATION ID (yep it's a guid too)>"
-export ARM_CLIENT_SECRET="<THE APP REGISTRATION SECRET (not a guid this time)>"
+export TF_VAR_dns_zone_name="<YOUR DNS ZONE NAME>"
+export TF_VAR_dns_zone_rg_name="<RESOURCE GROUP NAME>"
+
+export ARM_SUBSCRIPTION_ID="<YOUR AZURE SUBSCRIPTION ID (a guid)>"
 ```
-Then using the `source .env` command the environment variables can be used by the ACME provider to temporary add records in your DNS zone to verify your ownership of the domain.  
-Note that if your are running this in Terraform Cloud you can skip this step.
+Then using the `source .env` command the environment variables are used by Terraform's provider to access the resources.  
+Note that if your are running this in Terraform Cloud you can skip this step, as the variables are set at the Terraform Cloud's workspace level.
 
 ### Create the resources
 Once everything is setup you should be able to run a `terraform init`, then a `terraform apply` to create the resources in your subscription.  
