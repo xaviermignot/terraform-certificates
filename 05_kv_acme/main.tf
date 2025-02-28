@@ -2,19 +2,14 @@ locals {
   suffix = "tf-certs-demo-${var.suffix}"
 }
 
-resource "azurerm_key_vault" "kv" {
-  name                = substr("kv-${local.suffix}", 0, 24)
-  location            = var.location
+data "azurerm_key_vault" "kv" {
+  name                = var.key_vault_name
   resource_group_name = var.resource_group_name
-
-  sku_name                  = "standard"
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  enable_rbac_authorization = true
 }
 
 resource "azurerm_key_vault_certificate" "cert" {
   name         = "cert-generated"
-  key_vault_id = azurerm_key_vault.kv.id
+  key_vault_id = data.azurerm_key_vault.kv.id
 
   certificate_policy {
     issuer_parameters {
@@ -49,8 +44,6 @@ resource "azurerm_key_vault_certificate" "cert" {
     }
   }
 
-  depends_on = [azurerm_role_assignment.kv_current_user]
-
   provisioner "local-exec" {
     command = <<EOT
 csr=$(az keyvault certificate pending show -n ${self.name} --vault-name "$KV_NAME" --query csr -o tsv)
@@ -59,7 +52,7 @@ acme.sh --signcsr --csr ./cert.csr --dns dns_azure
     EOT
 
     environment = {
-      KV_NAME = azurerm_key_vault.kv.name
+      KV_NAME = data.azurerm_key_vault.kv.name
     }
   }
 }
@@ -70,6 +63,4 @@ resource "azurerm_app_service_certificate" "cert" {
   location            = var.location
 
   key_vault_secret_id = azurerm_key_vault_certificate.cert.secret_id
-
-  depends_on = [azurerm_role_assignment.kv_app_service]
 }

@@ -21,7 +21,7 @@ variable "binding_cert" {
   default = "self_signed"
 
   validation {
-    condition = contains(["self_signed", "acme", "managed", "key_vault", "key_vault_acme"], var.binding_cert)
-    error_message = "The binding_cert variable must be one of self_signed, acme, managed, key_vault or key_vault_acme."
+    condition = contains(["self_signed", "acme", "managed", "kv_self_signed", "kv_acme"], var.binding_cert)
+    error_message = "The binding_cert variable must be one of self_signed, acme, managed, kv_self_signed or kv_acme."
   }  
 }

@@ -2,19 +2,9 @@ locals {
   suffix = "tf-certs-demo-${var.suffix}"
 }
 
-resource "azurerm_key_vault" "kv" {
-  name                = substr("kv-${local.suffix}", 0, 24)
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  sku_name                  = "standard"
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  enable_rbac_authorization = true
-}
-
 resource "azurerm_key_vault_certificate" "cert" {
   name         = "cert-generated"
-  key_vault_id = azurerm_key_vault.kv.id
+  key_vault_id = var.key_vault_id
 
   certificate_policy {
     issuer_parameters {
@@ -62,8 +52,6 @@ resource "azurerm_key_vault_certificate" "cert" {
       }
     }
   }
-
-  depends_on = [azurerm_role_assignment.kv_current_user]
 }
 
 resource "azurerm_app_service_certificate" "cert" {
@@ -72,6 +60,4 @@ resource "azurerm_app_service_certificate" "cert" {
   location            = var.location
 
   key_vault_secret_id = azurerm_key_vault_certificate.cert.secret_id
-
-  depends_on = [azurerm_role_assignment.kv_app_service]
 }

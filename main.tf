@@ -14,6 +14,14 @@ module "app_service" {
   }
 }
 
+module "key_vault" {
+  source = "./00_key_vault"
+
+  suffix              = random_pet.suffix.id
+  location            = var.location
+  resource_group_name = module.app_service.resource_group_name
+}
+
 # This module generates a self-signed certificate and creates an App Service certificate from it
 module "self_signed" {
   source = "./01_self_signed"
@@ -50,21 +58,23 @@ module "managed" {
   custom_domain_binding_id = module.app_service.custom_domain_binding_id
 }
 
-module "key_vault" {
-  source = "./04_key_vault"
+module "kv_self_signed" {
+  source = "./04_kv_self_signed"
 
   resource_group_name = module.app_service.resource_group_name
   location            = var.location
   suffix              = random_pet.suffix.id
+  key_vault_id        = module.key_vault.id
   common_name         = module.app_service.custom_hostname
   email               = "contact@${var.dns_zone_name}"
 }
 
-module "key_vault_acme" {
-  source = "./05_key_vault_acme"
+module "kv_acme" {
+  source = "./05_kv_acme"
 
   resource_group_name = module.app_service.resource_group_name
   location            = var.location
+  key_vault_name      = module.key_vault.name
   suffix              = random_pet.suffix.id
   common_name         = module.app_service.custom_hostname
   email               = "contact@${var.dns_zone_name}"
@@ -72,11 +82,11 @@ module "key_vault_acme" {
 
 locals {
   certificate_ids = {
-    self_signed = module.self_signed.certificate_id
-    acme        = module.acme.certificate_id
-    managed     = module.managed.certificate_id
-    key_vault   = module.key_vault.certificate_id
-    key_vault_acme = module.key_vault_acme.certificate_id
+    self_signed    = module.self_signed.certificate_id
+    acme           = module.acme.certificate_id
+    managed        = module.managed.certificate_id
+    kv_self_signed = module.kv_self_signed.certificate_id
+    kv_acme        = module.kv_acme.certificate_id
   }
 }
 

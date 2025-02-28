@@ -13,6 +13,11 @@ variable "location" {
   description = "The location to create the resources in"
 }
 
+variable "key_vault_name" {
+  type        = string
+  description = "The name of the Key Vault" 
+}
+
 variable "common_name" {
   type        = string
   description = "The value of the CN field of the certificate"
