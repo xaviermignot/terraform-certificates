@@ -37,15 +37,4 @@ Once everything is setup you should be able to run a `terraform init`, then a `t
 
 ## Switch the certificate bound to the App Service
 What's interesting to do with this little project is to change the certificate bound to the App Service custom domain.  
-You can do this either in the Azure portal (in the TLS/SSL settings blade) or by changing the `certificate_id` argument here in the root module:
-```hcl
-resource "azurerm_app_service_certificate_binding" "cert_binding" {
-  certificate_id      = module.self_signed.certificate_id # <-- Change this !
-  hostname_binding_id = module.app_service.custom_domain_binding_id
-  ssl_state           = "SniEnabled"
-}
-```
-You can use one of the following values:
-- `module.self_signed.certificate_id` to use the self-signed certificate
-- `module.acme.certificate_id` to use the certificate from Let's Encrypt
-- `module.managed.certificate_id` to use the managed certificate
+You can do this either in the Azure portal (in the TLS/SSL settings blade) or by changing the value of the `binding_cert` variable and applying the changes again. The value can be either `self_signed` (default), `acme` or `managed`.

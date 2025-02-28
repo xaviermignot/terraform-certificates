@@ -14,3 +14,14 @@ variable "dns_zone_rg_name" {
   description = "The name of the resource group containing the DNS Zone"
   default     = "rg-dns"
 }
+
+variable "binding_cert" {
+  type = string
+  description = "The type of certificate to use for the binding"
+  default = "self_signed"
+
+  validation {
+    condition = contains(["self_signed", "acme", "managed"], var.binding_cert)
+    error_message = "The binding_cert variable must be one of self_signed, acme, or managed."
+  }  
+}

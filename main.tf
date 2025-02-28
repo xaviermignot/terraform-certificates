@@ -45,10 +45,18 @@ module "managed" {
   custom_domain_binding_id = module.app_service.custom_domain_binding_id
 }
 
+locals {
+  certificate_ids = {
+    self_signed = module.self_signed.certificate_id
+    acme        = module.acme.certificate_id
+    managed     = module.managed.certificate_id
+  }
+}
+
 # The binding between the App Service custom domain and the certificate is done here.
 # You can choose which certificate is used and see the result after applying the changes
 resource "azurerm_app_service_certificate_binding" "cert_binding" {
-  certificate_id      = module.managed.certificate_id
+  certificate_id      = local.certificate_ids[var.binding_cert]
   hostname_binding_id = module.app_service.custom_domain_binding_id
   ssl_state           = "SniEnabled"
 }
