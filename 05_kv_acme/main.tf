@@ -8,7 +8,7 @@ data "azurerm_key_vault" "kv" {
 }
 
 resource "azurerm_key_vault_certificate" "cert" {
-  name         = "cert-generated"
+  name         = "cert-acme"
   key_vault_id = data.azurerm_key_vault.kv.id
 
   certificate_policy {
@@ -47,7 +47,7 @@ resource "azurerm_key_vault_certificate" "cert" {
   provisioner "local-exec" {
     command = <<EOT
 csr=$(az keyvault certificate pending show -n ${self.name} --vault-name "$KV_NAME" --query csr -o tsv)
-echo '-----BEGIN CERTIFICATE REQUEST-----' && echo "$csr" && echo '-----END CERTIFICATE REQUEST-----' > ./cert.csr
+echo "-----BEGIN CERTIFICATE REQUEST-----\n$csr\n-----END CERTIFICATE REQUEST-----" > ./cert.csr
 acme.sh --signcsr --csr ./cert.csr --dns dns_azure
     EOT
 
