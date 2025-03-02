@@ -69,16 +69,16 @@ module "kv_self_signed" {
   email               = "contact@${var.dns_zone_name}"
 }
 
-module "kv_acme" {
-  source = "./05_kv_acme"
+# module "kv_acme" {
+#   source = "./05_kv_acme"
 
-  resource_group_name = module.app_service.resource_group_name
-  location            = var.location
-  key_vault_name      = module.key_vault.name
-  suffix              = random_pet.suffix.id
-  common_name         = module.app_service.custom_hostname
-  email               = "contact@${var.dns_zone_name}"
-}
+#   resource_group_name = module.app_service.resource_group_name
+#   location            = var.location
+#   key_vault_name      = module.key_vault.name
+#   suffix              = random_pet.suffix.id
+#   common_name         = module.app_service.custom_hostname
+#   email               = "contact@${var.dns_zone_name}"
+# }
 
 locals {
   certificate_ids = {
@@ -86,7 +86,7 @@ locals {
     acme           = module.acme.certificate_id
     managed        = module.managed.certificate_id
     kv_self_signed = module.kv_self_signed.certificate_id
-    kv_acme        = module.kv_acme.certificate_id
+    # kv_acme        = module.kv_acme.certificate_id
   }
 }
 
