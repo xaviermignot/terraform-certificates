@@ -67,6 +67,8 @@ module "kv_self_signed" {
   key_vault_id        = module.key_vault.id
   common_name         = module.app_service.custom_hostname
   email               = "contact@${var.dns_zone_name}"
+
+  depends_on = [ module.key_vault ]
 }
 
 # module "kv_acme" {
@@ -78,6 +80,8 @@ module "kv_self_signed" {
 #   suffix              = random_pet.suffix.id
 #   common_name         = module.app_service.custom_hostname
 #   email               = "contact@${var.dns_zone_name}"
+
+#   depends_on = [ module.key_vault ]
 # }
 
 locals {
